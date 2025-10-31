@@ -1,0 +1,36 @@
+# CONFIGURATION ANSIBLE
+#
+# Ce fichier configure un managed node pour utilisation avec ansible :
+#   - installe le package sudo
+#   - crée un user ansible
+#   - copie la clef ssh dans le user ansible
+---
+- name: Set hostname based on inventory
+  hosts: all
+  remote_user: root
+  tasks:
+    - name: Install sudo package
+      ansible.builtin.apt:
+        name: sudo
+        state: present
+        update_cache: true
+    - name: Create user ansible
+      ansible.builtin.user:
+        name: ansible
+        groups: sudo
+    - name: Create the .ssh directory
+      ansible.builtin.file:
+        path: /home/ansible/.ssh
+        state: directory
+        owner: ansible
+        group: ansible
+        mode: '0700' # Essential security setting for SSH directories
+    - name: Copy SSH key to ansible user
+      ansible.builtin.copy:
+        src: files/authorized_keys
+        dest: /home/ansible/.ssh/authorized_keys
+        owner: ansible
+        group: ansible
+        mode: '0700' # Essential security setting for SSH directories
+
+        

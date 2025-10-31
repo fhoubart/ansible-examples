@@ -1,0 +1,19 @@
+---
+- name: Set hostname based on inventory
+  hosts: all
+  become: true
+  tasks:
+    - name: Ensure /etc/hostname is set to the inventory name
+      ansible.builtin.copy:
+        content: "{{ inventory_hostname }}\n" # Use the hostname as defined in the inventory
+        dest: /etc/hostname
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - reset hostname
+
+  handlers:
+    - name: update hostname from configuration
+      ansible.builtin.command: hostnamectl set-hostname --static {{ inventory_hostname }}
+      listen: "reset hostname"
