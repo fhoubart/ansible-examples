@@ -12,6 +12,12 @@ Dans `/etc/ssh/sshd_config`, mettre :
 PermitRootLogin yes
 ```
 
+La dynamique d'installation est la suivante :
+
+* Installer, avec une connexion `root`, les prérequis pour que le noeud soit controllé par Ansible
+( utilisateur `ansible`, configuration sudo, clefs ssh) -> playbook `configure_ansible.yaml`
+* Installer un serveur web avec le user `ansible` -> playbook `webserver.yaml`
+
 ## Preliminaire : préparer le noeud pour être géré par Ansible
 
 Prerequis : copier la clef SSH publique du control node dans le fichier `files/authorized_keys`
