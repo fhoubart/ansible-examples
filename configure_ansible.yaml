@@ -4,6 +4,12 @@
 #   - installe le package sudo
 #   - crée un user ansible
 #   - copie la clef ssh dans le user ansible
+#
+# Ce playbook doit se lancer en root. Or la configuration de ansible_user
+# est prioritaire par rapport au remote_user du playbook. Si le fichier
+# d'inventaire définit cette variable, il faut le surcharger sur la
+# ligne de commande :
+# ansible-playbook configure_ansible.yaml -i inventory.ini -e ansible_user=root
 ---
 - name: Set hostname based on inventory
   hosts: all
@@ -18,6 +24,13 @@
       ansible.builtin.user:
         name: ansible
         groups: sudo
+    - name: Configure passwordless sudo for ansible user
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers
+        regexp: '^ansible'
+        line: 'ansible ALL=(ALL) NOPASSWD: ALL'
+        validate: '/usr/sbin/visudo -cf %s'
+        state: present
     - name: Create the .ssh directory
       ansible.builtin.file:
         path: /home/ansible/.ssh
