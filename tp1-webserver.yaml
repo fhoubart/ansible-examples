@@ -1,0 +1,34 @@
+# TP 1 : Déploiement d'un web server Nginx
+#
+---
+- name: Set hostname based on inventory
+  hosts: webservers # Ce play ne cible que les machines du gruope webserver
+  become: true
+  vars_files:
+    - vars/main.yaml  # Include the vars file. Cette directive est inutile si
+                      # ce fichier fait partie d'un role. Le role va automatiquement
+                      # charger vars/main.yaml
+
+  tasks:
+    - name: Installation du package nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: true
+      notify: restart_nginx # this will restart nginx after installation
+    - name: Démarrage et activation du service Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+    - name: Copie le template index.html.j2
+      ansible.builtin.template:
+        src: template/index.html.j2
+        dest: /var/www/html/index.html
+
+  handlers:
+    - name: restart Nginx
+      service:
+        name: nginx
+        state: restarted
+        

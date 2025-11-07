@@ -1,0 +1,10 @@
+<!-- templates/index.html.j2 -->
+<h1>{{ message_accueil }}</h1>
+<p>Vous êtes servi par <b>{{ ansible_facts['hostname'] }}</b></p>
+<p>Ce serveur est configuré par Ansible.</p>
+<p>Les adresses ip du serveur sont :</p>
+<ul>
+  {% for ip in ansible_facts['all_ipv4_addresses'] %}
+    <li>{{ ip }}</li>
+  {% endfor %}
+</ul>
